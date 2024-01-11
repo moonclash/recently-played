@@ -128,6 +128,8 @@ ENV/
 env.bak/
 venv.bak/
 
+src/db.json
+
 # Spyder project settings
 .spyderproject
 .spyproject
