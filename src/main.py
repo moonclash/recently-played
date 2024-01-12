@@ -47,7 +47,7 @@ def callback(request: Request):
         },
     )
     response_data = response.json()
-    DbManager.insert_token({
+    DbManager.update_token({
         "spotify_access_token": response_data.get("access_token"),
         "spotify_refresh_token": response_data.get("refresh_token")
     })
@@ -69,17 +69,13 @@ def refresh_token():
     )
 
     response_data = response.json()
-    print(response_data, response)
     DbManager.update_token({
         "spotify_access_token": response_data.get("access_token"),
-        "spotify_refresh_token": response_data.get("refresh_token")
     })
 
 
 @app.get("/recently-played")
 def recently_played(after: Optional[str] = None, before: Optional[str] = None, limit: Optional[int] = None):
-    # refresh_token()
-
     _params = {}
     if after and limit:
         after_obj = string_to_date(after)

@@ -22,6 +22,7 @@ def get_token():
             "grant_type": "authorization_code"
         }
     )
+    print(response.json())
     response_data = response.json()
     DbManager.update_token({
         "strava_access_token": response_data.get("access_token"),
@@ -101,6 +102,7 @@ def update_activities_with_songs():
             activity.get("activity_id"),
             description="Songs played: \n" + "\n".join(songs_response_data)
         )
+
 update_activities_with_songs()
 
 
