@@ -40,7 +40,3 @@ def format_songs(spotify_items, before=None, after=None):
 
 def string_to_date(date_string):
     return datetime.strptime(date_string[0:16], "%Y-%m-%dT%H:%M")
-
-def check_response(res, refresh_op):
-    if res.response_code in (401, 400, 403):
-        refresh_op()

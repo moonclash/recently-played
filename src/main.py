@@ -31,7 +31,6 @@ def login():
 @app.get("/callback")
 def callback(request: Request):
     code = request.query_params.get("code")
-    state = request.query_params.get("state")
     token = encode_string(CLIENT_ID, CLIENT_SECRET)
     response = requests.post(
         url="https://accounts.spotify.com/api/token",
@@ -81,7 +80,6 @@ def recently_played(after: Optional[str] = None, before: Optional[str] = None, l
         after_obj = string_to_date(after)
         _params["after"] = round(after_obj.timestamp())
         _params["limit"] = limit
-        print(_params)
 
     response = requests.get(
         url="https://api.spotify.com/v1/me/player/recently-played",
@@ -90,7 +88,6 @@ def recently_played(after: Optional[str] = None, before: Optional[str] = None, l
         },
         params=_params,
     )
-    print(response)
     music_data = response.json().get("items")
     formatted_songs = format_songs(
         music_data, before=before, after=after
