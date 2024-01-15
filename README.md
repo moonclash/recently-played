@@ -17,9 +17,13 @@ To get this running locally (because I have no intentions to host this anywhere)
 - create an `.env` file with the following credentials from Spotify and Strava:
 
 CLIENT_ID=my_client_id
+
 CLIENT_SECRET=my_client_secret
+
 STRAVA_CLIENT_ID=my_trava_client_id
+
 STRAVA_SECRET=my_strava_client_secret
+
 
 and then run 
 
