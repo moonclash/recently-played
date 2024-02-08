@@ -4,3 +4,4 @@ fastapi-session==0.2.7
 uvicorn==0.25.0
 requests==2.31.0
 tinydb==4.8.0
+celery==5.3.6
