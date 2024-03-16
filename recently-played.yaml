@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rec-played
+spec:
+  selector:
+    matchLabels:
+      app: rec-played
+  template:
+    metadata:
+      labels:
+        app: rec-played
+    spec:
+      containers:
+      - name: rec-played
+        image: moonclash/recently-played:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+    
+        ports:
+          - containerPort: 8000
+
+        env:
+          - name: CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: played-secrets
+                key: spotify-client-id
+          
+          - name: CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: played-secrets
+                key: spotify-client-secret
+          
+          - name: STRAVA_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: played-secrets
+                key: strava-client-id
+          
+          - name: STRAVA_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: played-secrets
+                key: strava-secret
+          
+          - name: URL
+            valueFrom:
+              secretKeyRef:
+                name: played-secrets
+                key: strava-url
+          
+          - name: CODE
+            valueFrom:
+              secretKeyRef:
+                name: played-secrets
+                key: strava-code
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rec-played
+spec:
+  selector:
+    app: myapp
+  ports:
+  - port: 8000
+    targetPort: 8000
+
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rec-played-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
