@@ -11,6 +11,7 @@ UPDATE_ACTIVITY_URL = "https://www.strava.com/api/v3/activities"
 CLIENT_ID = os.getenv("STRAVA_CLIENT_ID")
 CLIENT_SECRET = os.getenv("STRAVA_SECRET")
 CODE = os.getenv("CODE")
+HOST = "localhost"
 
 
 def get_token():
@@ -96,7 +97,7 @@ def update_activities_with_songs():
     activities = get_recent_activities()
     for activity in activities:
         songs_response = requests.get(
-            "http://localhost:8000/recently-played",
+            f"http://{HOST}:8000/recently-played",
             params={
                 "after": activity.get("after"),
                 "before": activity.get("before"),

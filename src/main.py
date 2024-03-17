@@ -5,6 +5,8 @@ from typing import Optional
 from starlette.responses import RedirectResponse
 from util import generate_random_string, encode_string, format_songs, string_to_date
 from storage import DbManager
+from strava import refresh_token as refresh_strava_token
+from strava import update_activities_with_songs
 
 app = FastAPI()
 
@@ -51,6 +53,13 @@ def callback(request: Request):
         "spotify_refresh_token": response_data.get("refresh_token")
     })
     return response_data
+
+
+@app.post("/auto-update")
+def auto_update():
+    refresh_strava_token()
+    refresh_token()
+    update_activities_with_songs()
 
 
 def refresh_token():
