@@ -57,5 +57,5 @@ kubectl apply -f recently-played.yaml
 kubectl apply -f rec-played-cronjob.yaml
 ```
 
-And then leave your computer running and enjo life (or host this on GCP|AWS|AZURE, you're your own boss)
+And then leave your computer running and enjoy life (or host this on GCP|AWS|AZURE, you're your own boss)
 
