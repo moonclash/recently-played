@@ -8,6 +8,6 @@ RUN pip3 install -r requirements.txt
 
 COPY ./src/ .
 
-RUN touch db.json
+RUN touch db.json && chmod 666 db.json
 
 CMD uvicorn main:app --host 0.0.0.0 --port $PORT
