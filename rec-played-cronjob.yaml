@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: recently-played-updater
 spec:
-  schedule: "30 9,12,20 * * *"
+  schedule: "15 9,11,12,20 * * *"
   jobTemplate:
     spec:
       template:

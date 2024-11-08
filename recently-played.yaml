@@ -15,9 +15,12 @@ spec:
       - name: rec-played
         image: moonclash/recently-played:latest
         resources:
-          limits:
+          requests:
             memory: "128Mi"
-            cpu: "500m"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
     
         ports:
           - containerPort: 8000

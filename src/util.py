@@ -2,7 +2,21 @@ import string
 from random import shuffle
 from base64 import b64encode
 from datetime import datetime
+import google.generativeai as genai
+import os
 
+
+
+def generate_activity_name(activity_type, songs):
+    genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    response = model.generate_content(f"""
+        Come up with a witty Strava activity title based on this
+        activity - {activity_type} and these songs - {songs},
+        and please just respond with one singular line of text,
+        that is the title itself.
+    """)
+    return response.text
 
 def generate_random_string(len=16):
     alphabet = string.ascii_lowercase
@@ -30,10 +44,8 @@ def format_songs(spotify_items, before=None, after=None):
         track = item.get("track")
         artists = track.get("artists")
         track_name = track.get("name")
-        played_at = item.get("played_at")
-        played_at_datetime = string_to_date(played_at)
         formatted_songs.append(
-            f"{','.join([artist.get('name') for artist in artists])} - {track_name}, played @ {played_at_datetime.time().strftime('%H:%M')}"
+            f"{','.join([artist.get('name') for artist in artists])} - {track_name}"
         )
     return formatted_songs
 

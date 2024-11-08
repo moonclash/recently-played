@@ -2,7 +2,7 @@ import os
 import requests
 from datetime import datetime, timedelta
 from storage import DbManager
-from util import string_to_date
+from util import string_to_date, generate_activity_name
 
 GET_ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities"
 GET_TOKEN_URL = "https://www.strava.com/oauth/token"
@@ -55,16 +55,16 @@ def refresh_token():
 
 def get_recent_activities():
     now = datetime.now()
-    yesterday = (now - timedelta(days=1)).replace(
+    midnight = now.replace(
         hour=0, minute=0, second=0, microsecond=0
     )
-    yesterday_timestamp = round(yesterday.timestamp())
+    midnight_timestamp = round(midnight.timestamp())
     response = requests.get(
         url=GET_ACTIVITIES_URL,
         headers={
             "Authorization": f"Bearer {DbManager.get_token().get('strava_access_token')}"
         },
-        params={"after": yesterday_timestamp},
+        params={"after": midnight_timestamp},
     )
     response_data = response.json()
     activities = []
@@ -73,6 +73,7 @@ def get_recent_activities():
             {
                 "activity_id": activity.get("id"),
                 "after": activity.get("start_date"),
+                "type": activity.get("type"),
                 "before": (
                     string_to_date(activity.get("start_date"))
                     + timedelta(seconds=activity.get("elapsed_time"))
@@ -82,13 +83,16 @@ def get_recent_activities():
     return activities
 
 
-def update_activity_description(activity_id, description):
+def update_activity_description(activity_id, description, name=None):
+    data = {"description": description}
+    if name:
+        data["name"] = name
     response = requests.put(
         url=f"{UPDATE_ACTIVITY_URL}/{activity_id}",
         headers={
             "Authorization": f"Bearer {DbManager.get_token().get('strava_access_token')}"
         },
-        data={"description": description},
+        data=data,
     )
     return response
 
@@ -105,7 +109,9 @@ def update_activities_with_songs():
             },
         )
         songs_response_data = songs_response.json().get("songs")
+        activity_name = generate_activity_name(activity.get("type"), songs_response_data)
         update_activity_description(
             activity.get("activity_id"),
-            description="🎵 Songs played 🎵: \n" + "\n".join(songs_response_data)
+            description="🎵 Songs played 🎵: \n" + "\n".join(songs_response_data),
+            name=activity_name,
         )
