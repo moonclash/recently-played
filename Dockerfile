@@ -8,4 +8,4 @@ RUN pip3 install -r requirements.txt
 
 COPY ./src/ .
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "$PORT", "--reload"]
+CMD uvicorn main:app --host 0.0.0.0 --port $PORT
