@@ -68,6 +68,7 @@ def get_recent_activities():
     )
     response_data = response.json()
     activities = []
+    print(response_data)
     for activity in response_data:
         activities.append(
             {
