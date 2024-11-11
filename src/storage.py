@@ -17,14 +17,6 @@ class DbManager:
 
     @staticmethod
     def get_token():
-        if len(db) == 0:
-            # Insert default tokens or initial empty tokens if db.json is empty
-            DbManager.insert_token({
-                "strava_access_token": os.getenv("STRAVA_ACCESS_TOKEN"),
-                "strava_refresh_token": os.getenv("STRAVA_REFRESH_TOKEN"),
-                "spotify_access_token": os.getenv("SPOTIFY_ACCESS_TOKEN"),
-                "spotify_refresh_token": os.getenv("STRAVA_REFRESH_TOKEN"),
-            })
         token = db.all()
         return token[0]
 

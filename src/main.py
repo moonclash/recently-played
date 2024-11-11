@@ -1,12 +1,11 @@
 import os
 import requests
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, BackgroundTasks
 from typing import Optional
 from starlette.responses import RedirectResponse
 from util import generate_random_string, encode_string, format_songs, string_to_date
 from storage import DbManager
-from strava import refresh_token as refresh_strava_token
-from strava import update_activities_with_songs
+from strava import update_activity_with_songs
 
 app = FastAPI()
 
@@ -29,6 +28,20 @@ def login():
     redirect_url = f"https://accounts.spotify.com/authorize?response_type=code&client_id={CLIENT_ID}&scope={scope}&state={state}&redirect_uri={REDIRECT_URI}"
     return RedirectResponse(redirect_url)
 
+
+@app.get("/strava-webhook")
+def strava_webhook(request: Request):
+    challenge = request.query_params.get("hub.challenge")
+    return {"hub.challenge": challenge}
+
+@app.post("/strava-webhook", status_code=200)
+async def strava_webhook(request: Request, background_tasks: BackgroundTasks):
+    request_data = await request.json()
+    activity_id = request_data.get("object_id")
+    aspect_type = request_data.get("aspect_type")
+    if aspect_type == "create":
+        background_tasks.add_task(update_activity_with_songs, activity_id)
+    return {"status": "accepted"}
 
 @app.get("/callback")
 def callback(request: Request):
@@ -53,33 +66,6 @@ def callback(request: Request):
         "spotify_refresh_token": response_data.get("refresh_token")
     })
     return response_data
-
-
-@app.post("/auto-update")
-def auto_update():
-    refresh_strava_token()
-    refresh_token()
-    update_activities_with_songs()
-
-
-def refresh_token():
-    response = requests.post(
-        url=ACCESS_TOKEN_URL,
-        headers={
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Authorization": f"Basic {encode_string(CLIENT_ID, CLIENT_SECRET)}",
-        },
-        data={
-            "grant_type": "refresh_token",
-            "refresh_token": DbManager.get_token().get("spotify_refresh_token"),
-            "client_id": CLIENT_ID,
-        },
-    )
-
-    response_data = response.json()
-    DbManager.update_token({
-        "spotify_access_token": response_data.get("access_token"),
-    })
 
 
 @app.get("/recently-played")
