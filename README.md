@@ -29,33 +29,8 @@ and then run
 
 `docker-compose up`
 
-While I'm working on adding a celery beat to this project (so we can have this updater run let's say three times a day), we can just run `python3 auto_updater.py` from inside the running docker container.
+Further update:
 
-Update: this is now a kubernetes project. Why? Because I have no idea, what's why.
-
-In order to run this project locally and have it auto run (I have it set to run 3 times a day), you need kubectl and some kind of k8s environment in order to run this. (You can still totally use the docker-compose approach, you won't get the auto update that way). 
-
-I am using minikube to run this project locally. 
-
-All you need to do to get everything running is create a k8s secret - `played-secrets.yaml` that will hold your b64 encoded secrets like so:
-
-```
-apiVersion: v1
-kind: Secret
-metadata:
-  name: played-secrets
-type: Opaque
-data:
-  spotify-client-id: my-encripted-secret-client-id
-```
-
-As soon as you have that, all you need to do is 
-
-```
-kubectl apply -f played-secrets.yaml
-kubectl apply -f recently-played.yaml
-kubectl apply -f rec-played-cronjob.yaml
-```
-
-And then leave your computer running and enjoy life (or host this on GCP|AWS|AZURE, you're your own boss)
+This now uses webhooks in stead of polling, so anytime you create a new strava activity this will update it with the songs you listened to.
+Also it will use an gemini prompt to generate an edgy title for your activity and update that too.
 
